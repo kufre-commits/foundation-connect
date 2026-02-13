@@ -177,7 +177,7 @@ const Register = () => {
                   <Input
                     id="firstName"
                     name="firstName"
-                    placeholder="John"
+                    placeholder="FirstName"
                     value={form.firstName}
                     onChange={handleChange}
                     required
@@ -188,7 +188,7 @@ const Register = () => {
                   <Input
                     id="middleName"
                     name="middleName"
-                    placeholder="Optional"
+                    placeholder="MiddleName (Optional)"
                     value={form.middleName}
                     onChange={handleChange}
                   />
@@ -199,7 +199,7 @@ const Register = () => {
                 <Input
                   id="lastName"
                   name="lastName"
-                  placeholder="Doe"
+                  placeholder="LastName"
                   value={form.lastName}
                   onChange={handleChange}
                   required
@@ -212,7 +212,7 @@ const Register = () => {
                     id="age"
                     name="age"
                     type="number"
-                    placeholder="25"
+                    placeholder="Your age"
                     min="1"
                     max="150"
                     value={form.age}
@@ -225,7 +225,7 @@ const Register = () => {
                   <Input
                     id="country"
                     name="country"
-                    placeholder="Nigeria"
+                    placeholder="Your country"
                     value={form.country}
                     onChange={handleChange}
                     required
@@ -237,7 +237,7 @@ const Register = () => {
                 <Input
                   id="address"
                   name="address"
-                  placeholder="123 Main Street, City"
+                  placeholder="Your address"
                   value={form.address}
                   onChange={handleChange}
                   required
@@ -249,7 +249,7 @@ const Register = () => {
                   id="phone"
                   name="phone"
                   type="tel"
-                  placeholder="+234 800 000 0000"
+                  placeholder="Your phone number"
                   value={form.phone}
                   onChange={handleChange}
                   required
