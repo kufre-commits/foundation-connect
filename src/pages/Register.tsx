@@ -6,14 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { addRegistrant, type Registrant } from "@/lib/storage";
 import { CheckCircle, Download, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Registration {
+  id: string;
+  first_name: string;
+  middle_name?: string | null;
+  last_name: string;
+  age: number;
+  country: string;
+  address: string;
+  phone: string;
+  created_at: string;
+}
 
 const Register = () => {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
-  const [currentRegistrant, setCurrentRegistrant] = useState<Registrant | null>(null);
+  const [currentRegistrant, setCurrentRegistrant] = useState<Registration | null>(null);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     middleName: "",
@@ -28,36 +41,45 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.firstName || !form.lastName || !form.age || !form.country || !form.address || !form.phone) {
       toast.error("Please fill in all required fields.");
       return;
     }
 
-    const registrant: Registrant = {
-      id: crypto.randomUUID(),
-      firstName: form.firstName.trim(),
-      middleName: form.middleName.trim() || undefined,
-      lastName: form.lastName.trim(),
-      age: parseInt(form.age),
-      country: form.country.trim(),
-      address: form.address.trim(),
-      phone: form.phone.trim(),
-      registeredAt: new Date().toISOString(),
-      formUploaded: false,
-    };
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("register", {
+        body: {
+          firstName: form.firstName.trim(),
+          middleName: form.middleName.trim() || null,
+          lastName: form.lastName.trim(),
+          age: form.age,
+          country: form.country.trim(),
+          address: form.address.trim(),
+          phone: form.phone.trim(),
+        },
+      });
 
-    addRegistrant(registrant);
-    setCurrentRegistrant(registrant);
-    setSubmitted(true);
-    toast.success("Registration successful!");
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setCurrentRegistrant(data.registration);
+      setSubmitted(true);
+      toast.success("Registration successful! A notification has been sent.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const downloadPDF = () => {
     if (!currentRegistrant) return;
-    const doc = new jsPDF();
     const r = currentRegistrant;
+    const doc = new jsPDF();
 
     doc.setFillColor(26, 42, 68);
     doc.rect(0, 0, 210, 45, "F");
@@ -72,14 +94,14 @@ const Register = () => {
     let y = 60;
     const fields = [
       ["Registration ID", r.id],
-      ["First Name", r.firstName],
-      ["Middle Name", r.middleName || "N/A"],
-      ["Last Name", r.lastName],
+      ["First Name", r.first_name],
+      ["Middle Name", r.middle_name || "N/A"],
+      ["Last Name", r.last_name],
       ["Age", String(r.age)],
       ["Country", r.country],
       ["Address", r.address],
       ["Phone Number", r.phone],
-      ["Date of Registration", new Date(r.registeredAt).toLocaleDateString()],
+      ["Date of Registration", new Date(r.created_at).toLocaleDateString()],
     ];
 
     fields.forEach(([label, value]) => {
@@ -92,14 +114,9 @@ const Register = () => {
 
     doc.setFontSize(9);
     doc.setTextColor(120, 120, 120);
-    doc.text(
-      "Please upload this form to complete your registration.",
-      105,
-      270,
-      { align: "center" }
-    );
+    doc.text("Please upload this form to complete your registration.", 105, 270, { align: "center" });
 
-    doc.save(`HopeRise_Registration_${r.firstName}_${r.lastName}.pdf`);
+    doc.save(`HopeRise_Registration_${r.first_name}_${r.last_name}.pdf`);
     toast.success("PDF downloaded successfully!");
   };
 
@@ -121,9 +138,7 @@ const Register = () => {
                 Registration Successful!
               </h2>
               <p className="text-muted-foreground mb-6 font-body">
-                Thank you, {currentRegistrant.firstName}! Your registration has
-                been recorded. Please download your form and upload it to
-                complete the process.
+                Thank you, {currentRegistrant.first_name}! Your registration has been recorded and a notification has been sent. Please download your form and upload it to complete the process.
               </p>
               <div className="flex flex-col gap-3">
                 <Button
@@ -161,12 +176,9 @@ const Register = () => {
       >
         <Card className="card-shadow border-border">
           <CardHeader className="text-center">
-            <CardTitle className="font-display text-2xl">
-              Registration Form
-            </CardTitle>
+            <CardTitle className="font-display text-2xl">Registration Form</CardTitle>
             <CardDescription className="font-body">
-              Fill in your details to stand a chance to be among the Top 10
-              Favorites.
+              Fill in your details to stand a chance to be among the Top 10 Favorites.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -174,93 +186,42 @@ const Register = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name *</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    placeholder="FirstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input id="firstName" name="firstName" placeholder="FirstName" value={form.firstName} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="middleName">Middle Name</Label>
-                  <Input
-                    id="middleName"
-                    name="middleName"
-                    placeholder="MiddleName (Optional)"
-                    value={form.middleName}
-                    onChange={handleChange}
-                  />
+                  <Input id="middleName" name="middleName" placeholder="MiddleName (Optional)" value={form.middleName} onChange={handleChange} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name *</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  placeholder="LastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  required
-                />
+                <Input id="lastName" name="lastName" placeholder="LastName" value={form.lastName} onChange={handleChange} required />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="age">Age *</Label>
-                  <Input
-                    id="age"
-                    name="age"
-                    type="number"
-                    placeholder="Your age"
-                    min="1"
-                    max="150"
-                    value={form.age}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input id="age" name="age" type="number" placeholder="Your age" min="1" max="150" value={form.age} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="country">Country *</Label>
-                  <Input
-                    id="country"
-                    name="country"
-                    placeholder="Your country"
-                    value={form.country}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input id="country" name="country" placeholder="Your country" value={form.country} onChange={handleChange} required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address *</Label>
-                <Input
-                  id="address"
-                  name="address"
-                  placeholder="Your address"
-                  value={form.address}
-                  onChange={handleChange}
-                  required
-                />
+                <Input id="address" name="address" placeholder="Your address" value={form.address} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number *</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="Your phone number"
-                  value={form.phone}
-                  onChange={handleChange}
-                  required
-                />
+                <Input id="phone" name="phone" type="tel" placeholder="Your phone number" value={form.phone} onChange={handleChange} required />
               </div>
               <Button
                 type="submit"
                 size="lg"
+                disabled={loading}
                 className="w-full gold-gradient text-secondary-foreground font-semibold hover:opacity-90 mt-2"
               >
-                Submit Registration
+                {loading ? "Submitting..." : "Submit Registration"}
               </Button>
             </form>
           </CardContent>
