@@ -12,9 +12,9 @@ serve(async (req) => {
   }
 
   try {
-    const { firstName, middleName, lastName, age, country, address, phone } = await req.json();
+    const { firstName, middleName, lastName, email, age, country, address, phone } = await req.json();
 
-    if (!firstName || !lastName || !age || !country || !address || !phone) {
+    if (!firstName || !lastName || !email || !age || !country || !address || !phone) {
       return new Response(
         JSON.stringify({ error: "All required fields must be filled" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -32,6 +32,7 @@ serve(async (req) => {
         first_name: firstName,
         middle_name: middleName || null,
         last_name: lastName,
+        email,
         age: parseInt(age),
         country,
         address,

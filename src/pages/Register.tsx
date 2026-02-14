@@ -31,6 +31,7 @@ const Register = () => {
     firstName: "",
     middleName: "",
     lastName: "",
+    email: "",
     age: "",
     country: "",
     address: "",
@@ -43,7 +44,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.firstName || !form.lastName || !form.age || !form.country || !form.address || !form.phone) {
+    if (!form.firstName || !form.lastName || !form.email || !form.age || !form.country || !form.address || !form.phone) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -55,6 +56,7 @@ const Register = () => {
           firstName: form.firstName.trim(),
           middleName: form.middleName.trim() || null,
           lastName: form.lastName.trim(),
+          email: form.email.trim(),
           age: form.age,
           country: form.country.trim(),
           address: form.address.trim(),
@@ -196,6 +198,10 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name *</Label>
                 <Input id="lastName" name="lastName" placeholder="LastName" value={form.lastName} onChange={handleChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <Input id="email" name="email" type="email" placeholder="Your email" value={form.email} onChange={handleChange} required />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
