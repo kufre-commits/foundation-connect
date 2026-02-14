@@ -20,6 +20,7 @@ export type Database = {
           age: number
           country: string
           created_at: string
+          email: string
           first_name: string
           form_uploaded: boolean
           id: string
@@ -32,6 +33,7 @@ export type Database = {
           age: number
           country: string
           created_at?: string
+          email?: string
           first_name: string
           form_uploaded?: boolean
           id?: string
@@ -44,6 +46,7 @@ export type Database = {
           age?: number
           country?: string
           created_at?: string
+          email?: string
           first_name?: string
           form_uploaded?: boolean
           id?: string
