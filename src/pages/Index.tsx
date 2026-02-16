@@ -15,7 +15,7 @@ const Index = () => {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight">
               Welcome to <br />
-              <span className="text-secondary">HopeRise Foundation</span>
+              <span className="text-secondary">Almira Aldhabi Foundation</span>
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-4 font-body">
               We believe everyone deserves a chance at financial stability. Our foundation is dedicated to empowering lives through direct financial support.
