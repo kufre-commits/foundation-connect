@@ -31,6 +31,39 @@ const UploadForm = () => {
     }
     setLoading(true);
     try {
+      // Get registrant name for the email subject
+      const { data: registrant } = await supabase
+        .from("registrations")
+        .select("first_name, last_name")
+        .eq("id", registrantId)
+        .single();
+
+      const registrantName = registrant
+        ? `${registrant.first_name} ${registrant.last_name}`
+        : "Unknown";
+
+      // Send PDF via email
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("registrantName", registrantName);
+
+      const emailRes = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-registration-email`,
+        {
+          method: "POST",
+          headers: {
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: formData,
+        }
+      );
+
+      if (!emailRes.ok) {
+        const errData = await emailRes.json();
+        throw new Error(errData.error || "Failed to send email");
+      }
+
+      // Mark as uploaded in DB
       const { error } = await supabase
         .from("registrations")
         .update({ form_uploaded: true })
@@ -38,7 +71,7 @@ const UploadForm = () => {
 
       if (error) throw error;
       setUploaded(true);
-      toast.success("Form uploaded successfully!");
+      toast.success("Form uploaded and sent successfully!");
     } catch (err) {
       console.error(err);
       toast.error("Upload failed. Please try again.");
