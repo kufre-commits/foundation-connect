@@ -12,9 +12,9 @@ serve(async (req) => {
   }
 
   try {
-    const { firstName, middleName, lastName, email, age, country, address, phone } = await req.json();
+    const { firstName, middleName, lastName, email, age, country, address, phone, gender } = await req.json();
 
-    if (!firstName || !lastName || !email || !age || !country || !address || !phone) {
+    if (!firstName || !lastName || !email || !age || !country || !address || !phone || !gender) {
       return new Response(
         JSON.stringify({ error: "All required fields must be filled" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -37,15 +37,19 @@ serve(async (req) => {
         country,
         address,
         phone,
+        gender,
       })
       .select()
       .single();
 
     if (error) {
       console.error("DB error:", error);
+      const msg = error.code === "23505" 
+        ? "This email has already been registered" 
+        : "Failed to save registration";
       return new Response(
-        JSON.stringify({ error: "Failed to save registration" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: msg }),
+        { status: error.code === "23505" ? 409 : 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
