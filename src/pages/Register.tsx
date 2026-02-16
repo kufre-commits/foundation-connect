@@ -36,6 +36,7 @@ const Register = () => {
     country: "",
     address: "",
     phone: "",
+    gender: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +45,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.firstName || !form.lastName || !form.email || !form.age || !form.country || !form.address || !form.phone) {
+    if (!form.firstName || !form.lastName || !form.email || !form.age || !form.country || !form.address || !form.phone || !form.gender) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -61,6 +62,7 @@ const Register = () => {
           country: form.country.trim(),
           address: form.address.trim(),
           phone: form.phone.trim(),
+          gender: form.gender,
         },
       });
 
@@ -220,6 +222,21 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number *</Label>
                 <Input id="phone" name="phone" type="tel" placeholder="Your phone number" value={form.phone} onChange={handleChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender *</Label>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={form.gender}
+                  onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                  required
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
               </div>
               <Button
                 type="submit"
