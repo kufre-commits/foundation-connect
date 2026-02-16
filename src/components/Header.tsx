@@ -17,7 +17,7 @@ const Header = () => {
         <Link to="/" className="flex items-center gap-2">
           <Heart className="h-6 w-6 text-secondary" fill="currentColor" />
           <span className="font-display text-lg font-bold text-primary-foreground">
-            HopeRise Foundation
+            Almira Aldhabi Foundation
           </span>
         </Link>
         <nav className="flex items-center gap-6">
