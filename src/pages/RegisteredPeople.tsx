@@ -19,14 +19,14 @@ interface Registration {
 }
 
 const dummyData: Omit<Registration, "id" | "created_at">[] = [
-  { first_name: "Ricardo", middle_name: null, last_name: "Rodriquez", age: 48, country: "Ecuador", gender: "Male", amount_paid: 2500 },
-  { first_name: "Jennifer", middle_name: null, last_name: "Lopez", age: 28, country: "Spain", gender: "Female", amount_paid: 1800 },
-  { first_name: "Piero", middle_name: null, last_name: "Thiago", age: 55, country: "Ecuador", gender: "Male", amount_paid: 3200 },
-  { first_name: "Raul", middle_name: null, last_name: "Jimenez", age: 22, country: "Mexico", gender: "Male", amount_paid: 1500 },
-  { first_name: "Santos", middle_name: null, last_name: "Clara", age: 35, country: "Colombia", gender: "Female", amount_paid: 2100 },
-  { first_name: "Jeremie", middle_name: null, last_name: "Frimpong", age: 18, country: "Ghana", gender: "Male", amount_paid: 900 },
-  { first_name: "Zayn", middle_name: null, last_name: "Aisha", age: 40, country: "Morocco", gender: "Female", amount_paid: 2800 },
-  { first_name: "Aarons", middle_name: null, last_name: "Sarah", age: 60, country: "USA", gender: "Female", amount_paid: 3500 },
+  { first_name: "Ricardo", middle_name: null, last_name: "Rodriquez", age: 48, country: "Ecuador", gender: "Male", amount_paid: 200 },
+  { first_name: "Jennifer", middle_name: null, last_name: "Lopez", age: 28, country: "Spain", gender: "Female", amount_paid: 100 },
+  { first_name: "Piero", middle_name: null, last_name: "Thiago", age: 55, country: "Ecuador", gender: "Male", amount_paid: 100 },
+  { first_name: "Raul", middle_name: null, last_name: "Jimenez", age: 22, country: "Mexico", gender: "Male", amount_paid: 200 },
+  { first_name: "Santos", middle_name: null, last_name: "Clara", age: 35, country: "Colombia", gender: "Female", amount_paid: 300 },
+  { first_name: "Jeremie", middle_name: null, last_name: "Frimpong", age: 18, country: "Ghana", gender: "Male", amount_paid: 300 },
+  { first_name: "Zayn", middle_name: null, last_name: "Aisha", age: 40, country: "Morocco", gender: "Female", amount_paid: 100 },
+  { first_name: "Aarons", middle_name: null, last_name: "Sarah", age: 60, country: "USA", gender: "Female", amount_paid: 200 },
 ];
 
 const RegisteredPeople = () => {
@@ -37,7 +37,7 @@ const RegisteredPeople = () => {
     const fetchRegistrants = async () => {
       const { data, error } = await supabase
         .from("registrations")
-        .select("id, first_name, middle_name, last_name, age, country, created_at")
+        .select("id, first_name, middle_name, last_name, age, country, gender, created_at")
         .eq("form_uploaded", true)
         .order("created_at", { ascending: false });
 
@@ -65,9 +65,7 @@ const RegisteredPeople = () => {
               <Users className="h-7 w-7 text-secondary-foreground" />
             </div>
             <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Registered People</h1>
-            <p className="text-muted-foreground font-body">
-              {allPeople.length} registered {allPeople.length === 1 ? "person" : "people"} with completed forms.
-            </p>
+
           </div>
 
           {loading ? (
@@ -105,7 +103,9 @@ const RegisteredPeople = () => {
                         <TableCell>{r.age}</TableCell>
                         <TableCell>{r.gender || "—"}</TableCell>
                         <TableCell>{r.country}</TableCell>
-                        <TableCell className="font-semibold">${(r.amount_paid || 0).toLocaleString()}</TableCell>
+                        <TableCell className="font-semibold">
+                          {r.amount_paid != null ? `$${r.amount_paid.toLocaleString()}` : "Loading..."}
+                        </TableCell>
                         <TableCell>
                           <Badge className="bg-success/10 text-success border-success/20 hover:bg-success/10">Verified</Badge>
                         </TableCell>

@@ -30,11 +30,7 @@ const Index = () => {
                   Register Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/registered">
-                <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base px-8 py-6">
-                  <Users className="mr-2 h-5 w-5" /> View Registered People
-                </Button>
-              </Link>
+
             </div>
           </motion.div>
         </div>

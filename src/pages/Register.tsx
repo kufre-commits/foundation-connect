@@ -19,6 +19,7 @@ interface Registration {
   country: string;
   address: string;
   phone: string;
+  gender: string;
   created_at: string;
 }
 
@@ -101,6 +102,7 @@ const Register = () => {
       ["First Name", r.first_name],
       ["Middle Name", r.middle_name || "N/A"],
       ["Last Name", r.last_name],
+      ["Gender", r.gender],
       ["Age", String(r.age)],
       ["Country", r.country],
       ["Address", r.address],

@@ -5,10 +5,9 @@ const Header = () => {
   const location = useLocation();
 
   const linkClass = (path: string) =>
-    `text-sm font-medium transition-colors hover:text-secondary ${
-      location.pathname === path
-        ? "text-secondary"
-        : "text-primary-foreground/80"
+    `text-sm font-medium transition-colors hover:text-secondary ${location.pathname === path
+      ? "text-secondary"
+      : "text-primary-foreground/80"
     }`;
 
   return (
@@ -27,9 +26,7 @@ const Header = () => {
           <Link to="/register" className={linkClass("/register")}>
             Register
           </Link>
-          <Link to="/registered" className={linkClass("/registered")}>
-            Registered
-          </Link>
+
         </nav>
       </div>
     </header>

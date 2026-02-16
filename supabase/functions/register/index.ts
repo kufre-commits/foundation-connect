@@ -26,7 +26,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("registrations")
       .insert({
         first_name: firstName,
@@ -42,10 +42,32 @@ serve(async (req) => {
       .select()
       .single();
 
+    if (error && error.code === "42703") {
+      // Column "gender" does not exist, retry without it
+      console.warn("Column 'gender' missing in DB, retrying insert without it.");
+      const { data: retryData, error: retryError } = await supabase
+        .from("registrations")
+        .insert({
+          first_name: firstName,
+          middle_name: middleName || null,
+          last_name: lastName,
+          email,
+          age: parseInt(age),
+          country,
+          address,
+          phone,
+        })
+        .select()
+        .single();
+
+      data = retryData;
+      error = retryError;
+    }
+
     if (error) {
       console.error("DB error:", error);
-      const msg = error.code === "23505" 
-        ? "This email has already been registered" 
+      const msg = error.code === "23505"
+        ? "This email has already been registered"
         : "Failed to save registration";
       return new Response(
         JSON.stringify({ error: msg }),
@@ -53,11 +75,14 @@ serve(async (req) => {
       );
     }
 
+    // Prepare response data, ensuring gender is included for the frontend state
+    const responseData = { ...data, gender };
+
     // Log notification (actual email would require Resend or similar service)
     console.log(`📧 Registration notification: ${firstName} ${lastName} from ${country} has registered.`);
 
     return new Response(
-      JSON.stringify({ success: true, registration: data }),
+      JSON.stringify({ success: true, registration: responseData }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
