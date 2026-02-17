@@ -90,7 +90,7 @@ const Register = () => {
     doc.rect(0, 0, 210, 45, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
-    doc.text("Almira Aldhabi Foundation", 105, 20, { align: "center" });
+    doc.text("Amira Aldahab Foundation", 105, 20, { align: "center" });
     doc.setFontSize(12);
     doc.text("Registration Form", 105, 32, { align: "center" });
 
@@ -122,7 +122,7 @@ const Register = () => {
     doc.setTextColor(120, 120, 120);
     doc.text("Please upload this form to complete your registration.", 105, 270, { align: "center" });
 
-    doc.save(`AlmiraAldhabi_Registration_${r.first_name}_${r.last_name}.pdf`);
+    doc.save(`AmiraAldahab_Registration_${r.first_name}_${r.last_name}.pdf`);
     toast.success("PDF downloaded successfully!");
   };
 
